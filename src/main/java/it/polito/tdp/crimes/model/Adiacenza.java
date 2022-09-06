@@ -2,32 +2,36 @@ package it.polito.tdp.crimes.model;
 
 public class Adiacenza {
 	
-	String t1;
-	String t2;
-	int peso; 
+	String t;
+	int p;
 	
-	public Adiacenza(String t1, String t2, int peso) {
-		this.t1 = t1;
-		this.t2 = t2;
-		this.peso = peso;
+	
+	public Adiacenza(String t, int p) {
+		super();
+		this.t = t;
+		this.p = p;
 	}
 
-	public String getT1() {
-		return t1;
+
+	public String getT() {
+		return t;
 	}
 
-	public String getT2() {
-		return t2;
+
+	public void setT(String t) {
+		this.t = t;
 	}
 
-	public int getPeso() {
-		return peso;
+
+	public int getP() {
+		return p;
 	}
 
-	@Override
-	public String toString() {
-		return t1 + " ---- " + t2 + " (peso= " + peso + ")";
+
+	public void setP(int p) {
+		this.p = p;
 	}
+	
 	
 	
 	

@@ -50,23 +50,17 @@ public class CrimesController {
     void doCreaGrafo(ActionEvent event) {
     	txtResult.clear();
     	txtResult.appendText("Crea grafo...\n");
+    	String c=this.boxCategoria.getValue();
+    	LocalDate d=this.boxGiorno.getValue();
     	
-    	if(this.boxCategoria.getValue() != null && this.boxGiorno.getValue() != null)
-    	{
-    		txtResult.appendText(model.creaGrafo(this.boxCategoria.getValue(), this.boxGiorno.getValue()));
-    		List<Adiacenza> archiSelezionati = model.getArchiMaggMed();
-    		for(Adiacenza a:archiSelezionati)
-    		{
-    			txtResult.appendText("\n" + a.toString());
-    		}
-    		this.boxArco.getItems().addAll(archiSelezionati);
-    		this.btnPercorso.setDisable(false);
+    	if( c!= null &&  d!= null){
+    		txtResult.appendText(model.creaGrafo(c, d));
     	}
+    	
     	else
     	{
     		txtResult.setText("METTI CATEGORIA E GIORNO !!!");
     	}
-    	
     	
     }
 
@@ -75,14 +69,7 @@ public class CrimesController {
     	txtResult.clear();
     	txtResult.appendText("Calcola percorso...\n");
     	
-    	if(this.boxArco.getValue() != null)
-    	{
-    		List<String> percorso = model.calcolaPercorso(boxArco.getValue().getT1(), boxArco.getValue().getT2());
-    		for(String v:percorso)
-    		{
-    			System.out.println(v + "\n");
-    		}
-    	}
+    	
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete

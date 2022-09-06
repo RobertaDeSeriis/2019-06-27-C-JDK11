@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import it.polito.tdp.crimes.model.Adiacenza;
 import it.polito.tdp.crimes.model.Event;
@@ -94,8 +95,9 @@ public class EventsDao {
 	
 	public List<LocalDate> getGiorni()
 	{
-		String sql = "SELECT distinct DATE(reported_date) as data "
-				+ "FROM `events`";
+		String sql = "SELECT distinct DATE(reported_date) as data  "
+				+ "				FROM events "
+				+ "				ORDER BY data ";
 		
 		try {
 			Connection conn = DBConnect.getConnection() ;
@@ -108,7 +110,7 @@ public class EventsDao {
 			
 			while(res.next()) {
 				try {
-					list.add(res.getDate("data").toLocalDate());
+					list.add(res.getDate("data").toLocalDate()); //ricorda il to local date
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
@@ -118,58 +120,17 @@ public class EventsDao {
 			return list ;
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null ;
 		}
 		
 	}
 	
-	public List<String> getVertici(String cat, LocalDate data)
+	public List<Adiacenza> getVertici(String cat, LocalDate data, Map<String, Adiacenza> idMap)
 	{
-		String sql = "SELECT distinct offense_type_id "
-				+ "FROM `events` "
-				+ "WHERE DATE(reported_date) = ? AND offense_category_id = ? ";
-		
-		try {
-			Connection conn = DBConnect.getConnection() ;
-
-			PreparedStatement st = conn.prepareStatement(sql) ;
-			
-			List<String> list = new ArrayList<>() ;
-			
-			st.setString(1, data.toString());
-			
-			st.setString(2, cat);
-			
-			ResultSet res = st.executeQuery() ;
-			
-			while(res.next()) {
-				try {
-					list.add(res.getString("offense_type_id"));
-				} catch (Throwable t) {
-					t.printStackTrace();
-				}
-			}
-			
-			conn.close();
-			return list ;
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null ;
-		}
-	}
-	
-	public List<Adiacenza> getArchi (String cat, LocalDate data)
-	{
-		String sql = "SELECT e1.offense_type_id, e2.offense_type_id, COUNT(e1.precinct_id) as peso "
-				+ "FROM `events` e1, `events` e2 "
-				+ "WHERE e1.offense_type_id > e2.offense_type_id  "
-				+ "		AND e1.offense_category_id = ? AND DATE(e1.reported_date) = ? "
-				+ "		AND e1.offense_category_id = e2.offense_category_id AND DATE(e2.reported_date) = DATE(e1.reported_date) "
-				+ "GROUP BY e1.offense_type_id, e2.offense_type_id";
+		String sql = "SELECT offense_type_id, precinct_id "
+				+ "				FROM events "
+				+ "				WHERE offense_category_id = ? AND  DATE(reported_date)=? ";
 		
 		try {
 			Connection conn = DBConnect.getConnection() ;
@@ -178,15 +139,18 @@ public class EventsDao {
 			
 			List<Adiacenza> list = new ArrayList<>() ;
 			
-			st.setString(2, data.toString());
+			st.setString(1, data.toString()); //ricorda il toString
 			
-			st.setString(1, cat);
+			st.setString(2, cat);
 			
 			ResultSet res = st.executeQuery() ;
 			
 			while(res.next()) {
 				try {
-					list.add(new Adiacenza(res.getString("e1.offense_type_id"), res.getString("e2.offense_type_id"), res.getInt("peso")));
+					
+					Adiacenza a= new Adiacenza(res.getString("offense_type_id"),res.getInt("precinct_id"));
+					idMap.put(res.getString("offense_type_id"), a);
+					list.add(a);
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
@@ -196,10 +160,10 @@ public class EventsDao {
 			return list ;
 
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null ;
 		}
 	}
+	
 }
 	
